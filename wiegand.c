@@ -39,24 +39,24 @@ static unsigned long __wiegandBitCount;                // number of bits current
 static struct timespec __wiegandBitTime;               // timestamp of the last bit received (used for timeouts)
 
 void data0Pulse(void) {
-   if（__wiegandBitCount == 0）{
+   if(__wiegandBitCount == 0){
      __wiegandData[0] <<= 1;
      __wiegandBitCount++;
-   }else if (（__wiegandBitCount -1）/ 8 < WIEGANDMAXDATA) {
-        __wiegandData[（__wiegandBitCount-1） / 8 + 1] <<= 1;
+   }else if ((__wiegandBitCount -1)/ 8 < WIEGANDMAXDATA) {
+        __wiegandData[(__wiegandBitCount-1) / 8 + 1] <<= 1;
         __wiegandBitCount++;
     }
     clock_gettime(CLOCK_MONOTONIC, &__wiegandBitTime);
 }
 
 void data1Pulse(void) {
-  if（__wiegandBitCount == 0）{
+  if(__wiegandBitCount == 0){
     __wiegandData[0] <<= 1;
-    __wiegandData[（__wiegandBitCount-1） / 8 + 1] |= 1;
+    __wiegandData[(__wiegandBitCount-1) / 8 + 1] |= 1;
     __wiegandBitCount++;
-  }else if (__wiegandBitCount -1）/ 8 < WIEGANDMAXDATA) {
-        __wiegandData[（__wiegandBitCount-1） / 8 + 1] <<= 1;
-        __wiegandData[（__wiegandBitCount-1） / 8 + 1] |= 1;
+  }else if (__wiegandBitCount -1)/ 8 < WIEGANDMAXDATA) {
+        __wiegandData[(__wiegandBitCount-1) / 8 + 1] <<= 1;
+        __wiegandData[(__wiegandBitCount-1) / 8 + 1] |= 1;
         __wiegandBitCount++;
     }
     clock_gettime(CLOCK_MONOTONIC, &__wiegandBitTime);
