@@ -116,8 +116,8 @@ void printCharAsBinary(unsigned char ch) {
 void main(int argc,char *argv[]) {
     int i;
     int D0,D1;
-    D0 = atoi(argv[0]);
-    D1 = atoi(argv[1]);
+    D0 = atoi(argv[1]);
+    D1 = atoi(argv[2]);
     wiegandInit(D0, D1);
 
     while(1) {
