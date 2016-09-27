@@ -31,7 +31,7 @@
 #define D0_PIN 0
 #define D1_PIN 1
 
-#define WIEGANDMAXDATA 32
+#define WIEGANDMAXDATA 100
 #define WIEGANDTIMEOUT 3000000
 
 static unsigned char __wiegandData[WIEGANDMAXDATA];    // can capture upto 32 bytes of data -- FIXME: Make this dynamically allocated in init?
@@ -39,17 +39,24 @@ static unsigned long __wiegandBitCount;                // number of bits current
 static struct timespec __wiegandBitTime;               // timestamp of the last bit received (used for timeouts)
 
 void data0Pulse(void) {
-    if (__wiegandBitCount / 8 < WIEGANDMAXDATA) {
-        __wiegandData[__wiegandBitCount / 8] <<= 1;
+   if（__wiegandBitCount == 0）{
+     __wiegandData[0] <<= 1;
+     __wiegandBitCount++;
+   }else if (（__wiegandBitCount -1）/ 8 < WIEGANDMAXDATA) {
+        __wiegandData[（__wiegandBitCount-1） / 8 + 1] <<= 1;
         __wiegandBitCount++;
     }
     clock_gettime(CLOCK_MONOTONIC, &__wiegandBitTime);
 }
 
 void data1Pulse(void) {
-    if (__wiegandBitCount / 8 < WIEGANDMAXDATA) {
-        __wiegandData[__wiegandBitCount / 8] <<= 1;
-        __wiegandData[__wiegandBitCount / 8] |= 1;
+  if（__wiegandBitCount == 0）{
+    __wiegandData[0] <<= 1;
+    __wiegandData[（__wiegandBitCount-1） / 8 + 1] |= 1;
+    __wiegandBitCount++;
+  }else if (__wiegandBitCount -1）/ 8 < WIEGANDMAXDATA) {
+        __wiegandData[（__wiegandBitCount-1） / 8 + 1] <<= 1;
+        __wiegandData[（__wiegandBitCount-1） / 8 + 1] |= 1;
         __wiegandBitCount++;
     }
     clock_gettime(CLOCK_MONOTONIC, &__wiegandBitTime);
@@ -92,7 +99,7 @@ int wiegandGetPendingBitCount() {
  * Notes : this function clears the read data when called. On subsequent calls,
  * without subsequent data, this will return 0.
  */
- 
+
 int wiegandReadData(void* data, int dataMaxLen) {
     if (wiegandGetPendingBitCount() > 0) {
         int bitCount = __wiegandBitCount;
@@ -113,6 +120,26 @@ void printCharAsBinary(unsigned char ch) {
     }
 }
 
+
+void send_intent(int bits , char data[],char index[])
+{
+  char intent[4096];
+  int bytes = bits / 8;
+  int type = -3;
+  if (bits == 26){
+    type = -1;
+  }else if(bits == 34){
+    type = -2;
+  }
+  int off=snprintf(intent, 4096, "am broadcast -a com.sfz.checkCardIDMessage -ei index %s --ei type %d --es cardId ", index, type);
+  for (int szPos = 1; szPos < bytes - 1; szPos++) {
+    off += snprintf(intent + off, 4096 - off, "%02x" ,(unsigned char)data[szPos]);
+  }
+  off += snprintf(intent + off, 4096 - off, "\n");
+  //system(intent);
+  printf("%s\n",intent);
+}
+
 void main(int argc,char *argv[]) {
     int i;
     int D0,D1;
@@ -127,15 +154,15 @@ void main(int argc,char *argv[]) {
         } else {
             char data[100];
             bitLen = wiegandReadData((void *)data, 100);
-            int bytes = bitLen / 8 + 1;
-            printf("Read %d bits (%d bytes): ", bitLen, bytes);
-            for (i = 0; i < bytes; i++)
-                printf("%02X", (int)data[i]);
-            printf(" : ");
-            for (i = 0; i < bytes; i++)
-                printCharAsBinary(data[i]);
-            printf("\n");
+            send_intent(bitLen, data, argv[3]);
+            // int bytes = bitLen / 8 + 1;
+            // printf("Read %d bits (%d bytes): ", bitLen, bytes);
+            // for (i = 0; i < bytes; i++)
+            //     printf("%02X", (int)data[i]);
+            // printf(" : ");
+            // for (i = 0; i < bytes; i++)
+            //     printCharAsBinary(data[i]);
+            // printf("\n");
         }
     }
 }
-
