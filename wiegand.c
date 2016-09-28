@@ -137,8 +137,8 @@ void send_intent(int bits , char data[],char index[])
     off += snprintf(intent + off, 4096 - off, "%02x" ,(unsigned char)data[szPos]);
   }
   off += snprintf(intent + off, 4096 - off, "\n");
-  //system(intent);
-  printf("%s\n",intent);
+  system(intent);
+  //printf("%s\n",intent);
 }
 
 void main(int argc,char *argv[]) {
