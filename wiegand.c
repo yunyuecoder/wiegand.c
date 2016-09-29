@@ -130,10 +130,12 @@ void send_intent(int bits , char data[],char index[])
     type = -1;
   }else if(bits == 34){
     type = -2;
+  }else {
+    return;
   }
   int off=snprintf(intent, 4096, "am broadcast -a com.sfz.checkCardIDMessage -ei index %s --ei type %d --es cardId ", index, type);
   int szPos;
-  for (szPos = 1; szPos <= bytes + 1; szPos++) {
+  for (szPos = 1; szPos <= bytes; szPos++) {
     off += snprintf(intent + off, 4096 - off, "%02x" ,(unsigned char)data[szPos]);
   }
   off += snprintf(intent + off, 4096 - off, "\n");
