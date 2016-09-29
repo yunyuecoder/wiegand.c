@@ -52,7 +52,7 @@ void data0Pulse(void) {
 void data1Pulse(void) {
   if(__wiegandBitCount == 0){
     __wiegandData[0] <<= 1;
-    __wiegandData[(__wiegandBitCount-1) / 8 + 1] |= 1;
+    __wiegandData[0] |= 1;
     __wiegandBitCount++;
   }else if ((__wiegandBitCount -1)/ 8 < WIEGANDMAXDATA) {
         __wiegandData[(__wiegandBitCount-1) / 8 + 1] <<= 1;
