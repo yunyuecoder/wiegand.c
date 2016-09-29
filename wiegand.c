@@ -103,7 +103,7 @@ int wiegandGetPendingBitCount() {
 int wiegandReadData(void* data, int dataMaxLen) {
     if (wiegandGetPendingBitCount() > 0) {
         int bitCount = __wiegandBitCount;
-        int byteCount = (__wiegandBitCount / 8) + 1;
+        int byteCount = (__wiegandBitCount / 8) + 3;
         memcpy(data, (void *)__wiegandData, ((byteCount > dataMaxLen) ? dataMaxLen : byteCount));
 
         wiegandReset();
@@ -137,8 +137,8 @@ void send_intent(int bits , char data[],char index[])
     off += snprintf(intent + off, 4096 - off, "%02x" ,(unsigned char)data[szPos]);
   }
   off += snprintf(intent + off, 4096 - off, "\n");
-  system(intent);
-  //printf("%s\n",intent);
+  //system(intent);
+  printf("%s\n",intent);
 }
 
 void main(int argc,char *argv[]) {
